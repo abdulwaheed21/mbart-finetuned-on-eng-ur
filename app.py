@@ -1,33 +1,32 @@
-from flask import Flask, render_template, request, jsonify
-
+import streamlit as st
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-
-app = Flask(__name__)
 
 # Load model directly
 tokenizer = AutoTokenizer.from_pretrained("abdulwaheed1/english-to-urdu-translation-mbart")
 model = AutoModelForSeq2SeqLM.from_pretrained("abdulwaheed1/english-to-urdu-translation-mbart")
-@app.route('/')
-def index():
-    return render_template('index.html')
 
-@app.route('/translate', methods=['POST'])
-def translate():
-    try:
-        data = request.get_json()
-        text = data['text']
+def main():
+    st.title("English to Urdu Translation")
 
-        # Tokenize input text
-        inputs = tokenizer(text, return_tensors='pt', max_length=1024, truncation=True)
+    # Input text area
+    text = st.text_area("Enter English Text:", height=200)
 
-        # Generate translation
-        translation_ids = model.generate(**inputs)
-        translation = tokenizer.batch_decode(translation_ids, skip_special_tokens=True)[0]
+    # Translate button
+    if st.button("Translate"):
+        try:
+            # Tokenize input text
+            inputs = tokenizer(text, return_tensors='pt', max_length=1024, truncation=True)
 
-        return jsonify({'translation': translation})
+            # Generate translation
+            translation_ids = model.generate(**inputs)
+            translation = tokenizer.batch_decode(translation_ids, skip_special_tokens=True)[0]
 
-    except Exception as e:
-        return jsonify({'error': str(e)})
+            # Display translation result
+            st.text("Translation:")
+            st.text(translation)
+
+        except Exception as e:
+            st.error(f"Error: {str(e)}")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    main()
