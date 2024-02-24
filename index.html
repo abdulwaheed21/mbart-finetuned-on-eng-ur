@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translation App</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        #text, #translation-result {
+            margin-top: 10px; /* Add a margin at the top for separation */
+            border: 1px solid #ced4da; /* Add a border */
+            padding: 10px; /* Add padding */
+        }
+    </style>
+</head>
+<body class="container mt-5">
+    <h1 class="mb-4">English to Urdu Translation</h1>
+    
+    <div class="form-group">
+        <label for="text">Enter English Text:</label>
+        <textarea class="form-control" id="text" rows="4"></textarea>
+    </div>
+    
+    <button id="translate-button" class="btn btn-primary">Translate</button>
+    
+    <div class="form-group mt-3">
+        <label for="translation-result">Translation:</label>
+        
+ <textarea class="form-control" id="translation-result" rows="4"></textarea>
+        
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function translate() {
+                var text = document.getElementById('text').value;
+                fetch('/translate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 'text': text }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('translation-result').innerHTML = data.translation;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+
+            document.getElementById('translate-button').addEventListener('click', translate);
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
